@@ -1,14 +1,23 @@
 package com.via.tomaspe7.wheretheyplay;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.StrictMode;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+
+import com.via.tomaspe7.wheretheyplay.model.Fixture;
+import com.via.tomaspe7.wheretheyplay.recycler.MatchdayFixturesAdapter;
+import com.via.tomaspe7.wheretheyplay.recycler.OnClickListener;
+import com.via.tomaspe7.wheretheyplay.recycler.decoration.DividerItemDecoration;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -20,23 +29,51 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class FixturesActivity extends AppCompatActivity {
 
     public final int PRIMERA_DIVISION = 436;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private List<Fixture> fixtures;
+    private MatchdayFixturesAdapter fixturesAdapter;
+    private RecyclerView recyclerFixtures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fixtures);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                readFromServer();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        fixtures = new ArrayList<>();
+        fixturesAdapter = new MatchdayFixturesAdapter(this, fixtures);
+        recyclerFixtures = (RecyclerView) findViewById(R.id.recycle_matchday_fixtures);
+        recyclerFixtures.setHasFixedSize(true);
+        recyclerFixtures.setLayoutManager(new LinearLayoutManager(this));
+        recyclerFixtures.addItemDecoration(new DividerItemDecoration(this, null, true, true));
+        recyclerFixtures.setAdapter(fixturesAdapter);
+        recyclerFixtures.addOnItemTouchListener(new OnClickListener.RecyclerViewOnItemClickListener(getApplicationContext(), recyclerFixtures, new OnClickListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //TODO get home stadium from own API and show on map
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
 
         readFromServer();
     }
@@ -80,6 +117,14 @@ public class FixturesActivity extends AppCompatActivity {
                         fullTimeGoalsHomeTeam, fullTimeGoalsAwayTeam, halfTimeGoalsHomeTeam, halfTimeGoalsAwayTeam);
                 fixtures.add(fixture);
             }
+
+            Collections.sort(fixtures, new Comparator<Fixture>() {
+                @Override
+                public int compare(Fixture fixture, Fixture t1) {
+                    return fixture.getFixtureDate().compareTo(t1.getFixtureDate());
+                }
+            });
+//            fixturesAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         }

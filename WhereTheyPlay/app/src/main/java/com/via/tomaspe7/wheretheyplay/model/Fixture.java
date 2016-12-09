@@ -1,4 +1,4 @@
-package com.via.tomaspe7.wheretheyplay;
+package com.via.tomaspe7.wheretheyplay.model;
 
 public class Fixture {
     public static final String IN_PLAY_STATUS = "IN_PLAY";
@@ -24,5 +24,37 @@ public class Fixture {
         this.fullTimeGoalsAwayTeam = fullTimeGoalsAwayTeam;
         this.halfTimeGoalsHomeTeam = halfTimeGoalsHomeTeam;
         this.halfTimeGoalsAwayTeam = halfTimeGoalsAwayTeam;
+    }
+
+    public String getFixtureStatus() {
+        return fixtureStatus;
+    }
+
+    public String getFixtureDate() {
+        return fixtureDate;
+    }
+
+    public String getHomeTeamName() {
+        return homeTeamName;
+    }
+
+    public String getAwayTeamName() {
+        return awayTeamName;
+    }
+
+    public String getFullTimeGoalsHomeTeam() {
+        return fullTimeGoalsHomeTeam;
+    }
+
+    public String getFullTimeGoalsAwayTeam() {
+        return fullTimeGoalsAwayTeam;
+    }
+
+    public String getHalfTimeGoalsHomeTeam() {
+        return halfTimeGoalsHomeTeam;
+    }
+
+    public String getHalfTimeGoalsAwayTeam() {
+        return halfTimeGoalsAwayTeam;
     }
 }
