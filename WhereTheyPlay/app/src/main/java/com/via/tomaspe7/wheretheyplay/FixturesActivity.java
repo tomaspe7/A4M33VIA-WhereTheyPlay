@@ -1,15 +1,12 @@
 package com.via.tomaspe7.wheretheyplay;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.StrictMode;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.via.tomaspe7.wheretheyplay.model.Fixture;
@@ -124,7 +121,6 @@ public class FixturesActivity extends AppCompatActivity {
                     return fixture.getFixtureDate().compareTo(t1.getFixtureDate());
                 }
             });
-//            fixturesAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -134,7 +130,7 @@ public class FixturesActivity extends AppCompatActivity {
         private ProgressDialog progressDialog = new ProgressDialog(FixturesActivity.this);
 
         protected void onPreExecute() {
-            progressDialog.setMessage("Downloading your data...");
+            progressDialog.setMessage("Updating data...");
             progressDialog.show();
         }
 
