@@ -15,6 +15,7 @@ import com.via.tomaspe7.wheretheyplay.recycler.OnClickListener;
 import com.via.tomaspe7.wheretheyplay.recycler.decoration.DividerItemDecoration;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -102,12 +103,17 @@ public class FixturesActivity extends AppCompatActivity {
                 String halfTimeGoalsAwayTeam = "-";
 
                 if (fixtureStatus.equals(Fixture.IN_PLAY_STATUS) || fixtureStatus.equals(Fixture.FINISHED_STATUS)) {
-                    JSONObject halfTimeResult = result.getJSONObject("halfTime");
-
                     fullTimeGoalsHomeTeam = String.valueOf(result.get("goalsHomeTeam"));
                     fullTimeGoalsAwayTeam = String.valueOf(result.get("goalsAwayTeam"));
-                    halfTimeGoalsHomeTeam = String.valueOf(halfTimeResult.get("goalsHomeTeam"));
-                    halfTimeGoalsAwayTeam = String.valueOf(halfTimeResult.get("goalsAwayTeam"));
+
+                    try {
+                        JSONObject halfTimeResult = result.getJSONObject("halfTime");
+
+                        halfTimeGoalsHomeTeam = String.valueOf(halfTimeResult.get("goalsHomeTeam"));
+                        halfTimeGoalsAwayTeam = String.valueOf(halfTimeResult.get("goalsAwayTeam"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 Fixture fixture = new Fixture(fixtureStatus, fixtureDate, homeTeamName, awayTeamName,

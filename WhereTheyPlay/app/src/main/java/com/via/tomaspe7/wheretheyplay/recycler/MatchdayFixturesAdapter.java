@@ -1,10 +1,13 @@
 package com.via.tomaspe7.wheretheyplay.recycler;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.via.tomaspe7.wheretheyplay.R;
@@ -40,7 +43,17 @@ public class MatchdayFixturesAdapter extends RecyclerView.Adapter<MatchdayFixtur
         holder.awayTeam.setText(fixture.getAwayTeamName());
         holder.fixtureDate.setText(fixture.getFixtureDate());
         holder.homeTeamScore.setText(fixture.getFullTimeGoalsHomeTeam());
-        holder.awayTeamScore.setText(fixture.getHalfTimeGoalsHomeTeam());
+        holder.awayTeamScore.setText(fixture.getFullTimeGoalsAwayTeam());
+
+        if (fixture.getFixtureStatus().equals(Fixture.IN_PLAY_STATUS)){
+            holder.homeTeamScore.setTextColor(ContextCompat.getColor(context, R.color.in_play_fixture));
+            holder.awayTeamScore.setTextColor(ContextCompat.getColor(context, R.color.in_play_fixture));
+        }
+
+        if (fixture.getFixtureStatus().equals(Fixture.FINISHED_STATUS)){
+            holder.homeTeamScore.setTextColor(ContextCompat.getColor(context, R.color.finished_fixture));
+            holder.awayTeamScore.setTextColor(ContextCompat.getColor(context, R.color.finished_fixture));
+        }
     }
 
     @Override
@@ -57,6 +70,7 @@ public class MatchdayFixturesAdapter extends RecyclerView.Adapter<MatchdayFixtur
 
     public static class FixturesViewHolder extends RecyclerView.ViewHolder {
 
+        private LinearLayout item;
         private TextView homeTeam;
         private TextView awayTeam;
         private TextView fixtureDate;
@@ -66,6 +80,7 @@ public class MatchdayFixturesAdapter extends RecyclerView.Adapter<MatchdayFixtur
         public FixturesViewHolder(View itemView) {
             super(itemView);
 
+            item = (LinearLayout) itemView.findViewById(R.id.item_fixture);
             homeTeam = (TextView) itemView.findViewById(R.id.item_fixture_home_team);
             awayTeam = (TextView) itemView.findViewById(R.id.item_fixture_away_team);
             fixtureDate = (TextView) itemView.findViewById(R.id.item_fixture_date);
