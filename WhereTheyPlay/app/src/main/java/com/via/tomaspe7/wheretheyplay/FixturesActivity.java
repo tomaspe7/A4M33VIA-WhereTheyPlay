@@ -1,6 +1,7 @@
 package com.via.tomaspe7.wheretheyplay;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -64,7 +65,11 @@ public class FixturesActivity extends AppCompatActivity {
         recyclerFixtures.addOnItemTouchListener(new OnClickListener.RecyclerViewOnItemClickListener(getApplicationContext(), recyclerFixtures, new OnClickListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                //TODO get home stadium from own API and show on map
+                Fixture fixture = fixturesAdapter.getItem(position);
+
+                Intent intent = new Intent(FixturesActivity.this, MapsActivity.class);
+                intent.putExtra(MapsActivity.TEAM_TAG, fixture.getHomeTeamName());
+                startActivity(intent);
             }
 
             @Override

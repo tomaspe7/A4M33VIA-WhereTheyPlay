@@ -61,7 +61,7 @@ public class MatchdayFixturesAdapter extends RecyclerView.Adapter<MatchdayFixtur
         return fixtures.size();
     }
 
-    public Object getItem(int position) {
+    public Fixture getItem(int position) {
         if (fixtures == null || fixtures.get(position) == null) {
             return null;
         }
@@ -70,7 +70,6 @@ public class MatchdayFixturesAdapter extends RecyclerView.Adapter<MatchdayFixtur
 
     public static class FixturesViewHolder extends RecyclerView.ViewHolder {
 
-        private LinearLayout item;
         private TextView homeTeam;
         private TextView awayTeam;
         private TextView fixtureDate;
@@ -80,7 +79,6 @@ public class MatchdayFixturesAdapter extends RecyclerView.Adapter<MatchdayFixtur
         public FixturesViewHolder(View itemView) {
             super(itemView);
 
-            item = (LinearLayout) itemView.findViewById(R.id.item_fixture);
             homeTeam = (TextView) itemView.findViewById(R.id.item_fixture_home_team);
             awayTeam = (TextView) itemView.findViewById(R.id.item_fixture_away_team);
             fixtureDate = (TextView) itemView.findViewById(R.id.item_fixture_date);
