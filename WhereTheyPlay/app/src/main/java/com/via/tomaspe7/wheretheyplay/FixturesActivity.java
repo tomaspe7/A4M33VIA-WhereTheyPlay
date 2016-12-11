@@ -127,6 +127,8 @@ public class FixturesActivity extends AppCompatActivity {
                     return fixture.getFixtureDate().compareTo(t1.getFixtureDate());
                 }
             });
+
+            fixturesAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         }
