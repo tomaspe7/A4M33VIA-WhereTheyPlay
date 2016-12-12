@@ -38,15 +38,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         stadiumNames.put("FC Barcelona", "Camp Nou");
         stadiumNames.put("Real Betis", "Estadio Benito Villamarín");
         stadiumNames.put("RC Celta de Vigo", "Estadio de Balaídos");
-        stadiumNames.put("RC Deportivo La Coruna", "Estadio Municipal de Riazor");
+        stadiumNames.put("RC Deportivo La Coruna", "Estadio de Riazor");
         stadiumNames.put("SD Eibar", "Ipurua");
         stadiumNames.put("RCD Espanyol", "Cornellà-El Prat");
         stadiumNames.put("Granada CF", "Estadio Nuevo Los Cármenes");
         stadiumNames.put("UD Las Palmas", "Estadio Gran Canaria");
-        stadiumNames.put("CD Leganés", "Estadio Municipal de Butarque");
+        stadiumNames.put("CD Leganes", "Estadio Municipal Butarque");
         stadiumNames.put("Málaga CF", "Estadio La Rosaleda");
         stadiumNames.put("CA Osasuna", "Estadio El Sadar");
-        stadiumNames.put("Real Madrid CF", "Santiago Bernabéu");
+        stadiumNames.put("Real Madrid CF", "Estadio Santiago Bernabéu");
         stadiumNames.put("Real Sociedad de Fútbol", "Estadio Anoeta");
         stadiumNames.put("Sevilla FC", "Estadio Ramón Sánchez-Pizjuán");
         stadiumNames.put("Sporting Gijón", "Estadio El Molinón");
@@ -66,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             List<Address> addresses = geocoder.getFromLocationName(homeTeamStadiumName, 1);
             LatLng stadiumPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
 
-            this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(stadiumPosition, 13));
+            this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(stadiumPosition, 15));
             this.map.addMarker(new MarkerOptions()
                     .title(homeTeamStadiumName)
                     .snippet("Stadium of " + homeTeamName)
