@@ -66,8 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             List<Address> addresses = geocoder.getFromLocationName(homeTeamStadiumName, 1);
             LatLng stadiumPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(stadiumPosition, 13));
-            map.addMarker(new MarkerOptions()
+            this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(stadiumPosition, 13));
+            this.map.addMarker(new MarkerOptions()
                     .title(homeTeamStadiumName)
                     .snippet("Stadium of " + homeTeamName)
                     .position(stadiumPosition));
