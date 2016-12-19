@@ -1,9 +1,13 @@
 package com.via.tomaspe7.wheretheyplay;
 
+import android.app.ProgressDialog;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -13,15 +17,23 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final static String TEAM_TAG = "TEAM";
+    public final static String IP_TAG = "IP";
 
     private GoogleMap map;
-    private HashMap<String, String> stadiumNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,28 +42,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        stadiumNames = new HashMap<>();
-        stadiumNames.put("Deportivo Alavés", "Estadio de Mendizorroza");
-        stadiumNames.put("Athletic Club", "Estadio San Mamés");
-        stadiumNames.put("Club Atlético de Madrid", "Vicente Calderón");
-        stadiumNames.put("FC Barcelona", "Camp Nou");
-        stadiumNames.put("Real Betis", "Estadio Benito Villamarín");
-        stadiumNames.put("RC Celta de Vigo", "Estadio de Balaídos");
-        stadiumNames.put("RC Deportivo La Coruna", "Estadio de Riazor");
-        stadiumNames.put("SD Eibar", "Ipurua");
-        stadiumNames.put("RCD Espanyol", "Cornellà-El Prat");
-        stadiumNames.put("Granada CF", "Estadio Nuevo Los Cármenes");
-        stadiumNames.put("UD Las Palmas", "Estadio Gran Canaria");
-        stadiumNames.put("CD Leganes", "Estadio Municipal Butarque");
-        stadiumNames.put("Málaga CF", "Estadio La Rosaleda");
-        stadiumNames.put("CA Osasuna", "Estadio El Sadar");
-        stadiumNames.put("Real Madrid CF", "Estadio Santiago Bernabéu");
-        stadiumNames.put("Real Sociedad de Fútbol", "Estadio Anoeta");
-        stadiumNames.put("Sevilla FC", "Estadio Ramón Sánchez-Pizjuán");
-        stadiumNames.put("Sporting Gijón", "Estadio El Molinón");
-        stadiumNames.put("Valencia CF", "Estadio de Mestalla");
-        stadiumNames.put("Villarreal CF", "Estadio El Madrigal");
     }
 
     @Override
@@ -59,8 +49,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.map = map;
 
         try {
+            StadiumRetriever stadiumRetriever = new StadiumRetriever();
+            String ip = getIntent().getStringExtra(IP_TAG);
             String homeTeamName = getIntent().getStringExtra(TEAM_TAG);
-            String homeTeamStadiumName = stadiumNames.get(homeTeamName);    //TODO create own API providing stadium names
+            stadiumRetriever.execute(ip, homeTeamName);
+            String homeTeamStadiumName = stadiumRetriever.get();
+
+            if (homeTeamStadiumName == null){
+                throw new ExecutionException("Obtained null as homeTeamStadiumName", null);
+            }
 
             Geocoder geocoder = new Geocoder(this);
             List<Address> addresses = geocoder.getFromLocationName(homeTeamStadiumName, 1);
@@ -71,10 +68,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(homeTeamStadiumName)
                     .snippet("Stadium of " + homeTeamName)
                     .position(stadiumPosition));
-        } catch (IOException e){
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Unable to connect GoogleMaps.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Unable to connect to StadiumAPI.", Toast.LENGTH_LONG).show();
             finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Unable to connect to GoogleMaps.", Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    class StadiumRetriever extends AsyncTask<String, Integer, String> {
+        private ProgressDialog progressDialog = new ProgressDialog(MapsActivity.this);
+
+        protected void onPreExecute() {
+            progressDialog.setMessage("Getting home team stadium ...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                String address = "http://" + args[0] + ":8088/stadium?club=" + URLEncoder.encode(args[1], "UTF-8");
+
+                URL url = new URL(address);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                InputStream is = connection.getInputStream();
+                BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+                String homeTeamStadium = readAll(rd);
+
+                is.close();
+                return homeTeamStadium;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String homeTeamStadium) {
+            progressDialog.dismiss();
+        }
+
+        private String readAll(Reader rd) throws IOException {
+            StringBuilder sb = new StringBuilder();
+            int cp;
+            while ((cp = rd.read()) != -1) {
+                sb.append((char) cp);
+            }
+            return sb.toString();
         }
     }
 }
